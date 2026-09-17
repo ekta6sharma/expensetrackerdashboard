@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axiom Ledger — Bespoke Expense & Life-Energy Dashboard</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+
+  <!-- Chart.js CDN for robust financial data rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1.2rem;height:1.2rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">
+            Axiom Ledger
+            <span class="brand-tag">PRO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Multi-Currency Selector -->
+        <div class="currency-selector-wrap" title="Switch Display Currency (INR, USD, EUR, GBP, etc.)">
+          <select id="topbarCurrencySelect" class="currency-select-topbar">
+            <!-- Dynamically populated with INR and global currencies -->
+          </select>
+        </div>
+
+        <!-- Standout Feature 1: Life-Energy Global Toggle -->
+        <div class="life-toggle-container" id="globalLifeToggle" title="Toggle between Currency and Life-Energy (Hours of Work)">
+          <div class="life-toggle-switch"></div>
+          <span class="life-toggle-label">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:0.9rem;height:0.9rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Life-Energy Mode
+          </span>
+        </div>
+
+        <!-- Standout Feature 2: What-If Sandbox Trigger -->
+        <button class="btn btn-secondary btn-sm" id="openSandboxBtn" title="Launch the Interactive What-If Scenario Sandbox">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--accent-life);">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          What-If Sandbox
+        </button>
+
+        <!-- Add Expense CTA -->
+        <button class="btn btn-primary btn-sm" id="openAddExpenseBtn" title="Log a new transaction (Shortcut: 'N')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          New Transaction
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="btn btn-icon btn-ghost" id="themeToggleBtn" title="Toggle Light / Dark theme">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1.15rem;height:1.15rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </button>
+
+        <!-- Settings Modal Trigger -->
+        <button class="btn btn-icon btn-ghost" id="openSettingsBtn" title="Configure Hourly Wage & Budget Targets">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1.15rem;height:1.15rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Dashboard Subheader -->
+      <div class="dashboard-header">
+        <div class="dashboard-title-group">
+          <h1>Financial Operations & Spending Velocity</h1>
+          <p>Real-time cashflow intelligence, life-energy tracking & proactive burn rate oversight</p>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Grid (4 Cards) -->
+      <section class="metrics-grid">
+        <!-- 1. Total Spend -->
+        <div class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Monthly Outflow</span>
+            <div class="metric-icon-wrap">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+          </div>
+          <div class="metric-value" id="metricTotalSpend">$0.00</div>
+          <div class="metric-subtext" id="metricTotalSpendSub">Current billing cycle</div>
+        </div>
+
+        <!-- 2. Standout: Life Energy Cost -->
+        <div class="metric-card metric-card-life">
+          <div class="metric-top">
+            <span class="metric-label" style="color:var(--accent-life);">Life-Energy Expended</span>
+            <div class="metric-icon-wrap">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="metric-value" id="metricLifeEnergy">0h 0m</div>
+          <div class="metric-subtext" id="metricLifeEnergySub">Hours of your life worked</div>
+        </div>
+
+        <!-- 3. Daily Burn Rate -->
+        <div class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Daily Burn Velocity</span>
+            <div class="metric-icon-wrap">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              </svg>
+            </div>
+          </div>
+          <div class="metric-value" id="metricBurnRate">$0.00/day</div>
+          <div class="metric-subtext" id="metricBurnRateSub">Projected pace</div>
+        </div>
+
+        <!-- 4. Budget Cushion / Remaining -->
+        <div class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Budget Cushion</span>
+            <div class="metric-icon-wrap">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1rem;height:1rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+          </div>
+          <div class="metric-value" id="metricBudgetRemaining">$0.00</div>
+          <div class="metric-subtext" id="metricBudgetRemainingSub">Safe margin remaining</div>
+        </div>
+      </section>
+
+      <!-- Conscious Spending Split (Needs vs Wants) -->
+      <section class="conscious-spending-bar-card">
+        <div class="split-meta">
+          <span style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.76rem; color: var(--text-muted);">Conscious Spending Framework (50/30 Rule)</span>
+          <span style="font-size: 0.78rem; color: var(--text-secondary);">Essentials vs. Discretionary Outflows</span>
+        </div>
+        <div class="split-ratio-progress">
+          <div class="split-fill-needs" id="splitFillNeeds" style="width: 50%;"></div>
+          <div class="split-fill-wants" id="splitFillWants" style="width: 50%;"></div>
+        </div>
+        <div class="split-labels">
+          <div id="splitLabelNeeds"><strong>Essentials (Needs):</strong> $0.00 (0%)</div>
+          <div id="splitLabelWants"><strong>Discretionary (Wants):</strong> $0.00 (0%)</div>
+        </div>
+      </section>
+
+      <!-- Visual Analytics Grid -->
+      <section class="charts-grid">
+        <!-- 1. Cumulative Spending Velocity vs Ideal Pace Curve -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-header-left">
+              <span class="chart-title">Spending Velocity Trajectory</span>
+              <span class="chart-subtitle">Cumulative daily spending pace vs. linear budget target</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="spendingVelocityChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 2. Category Allocation Donut -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-header-left">
+              <span class="chart-title">Category Outflow</span>
+              <span class="chart-subtitle">Portfolio allocation by sector</span>
+            </div>
+          </div>
+          <div class="chart-wrapper" style="max-height: 200px;">
+            <canvas id="categoryDonutChart"></canvas>
+            <div class="donut-center-info">
+              <div class="donut-center-label" id="donutCenterLabel">Total Outflow</div>
+              <div class="donut-center-value" id="donutCenterVal">$0.00</div>
+            </div>
+          </div>
+          <div class="custom-legend" id="categoryDonutLegend"></div>
+        </div>
+      </section>
+
+      <!-- Transactions Ledger Section -->
+      <section class="transactions-section">
+        <div class="transactions-toolbar">
+          <div class="toolbar-left">
+            <div class="search-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" id="tableSearchInput" class="form-input" placeholder="Search transactions, notes..." />
+            </div>
+
+            <div class="filter-pills">
+              <button class="filter-pill active" data-filter="all">All</button>
+              <button class="filter-pill" data-filter="need">Essentials</button>
+              <button class="filter-pill" data-filter="want">Discretionary</button>
+              <button class="filter-pill" data-filter="expense">Expenses Only</button>
+              <button class="filter-pill" data-filter="income">Income Only</button>
+            </div>
+          </div>
+
+          <div class="toolbar-right">
+            <select id="filterCategory" class="form-select" style="width: auto; font-size: 0.8rem; padding: 0.35rem 0.65rem;">
+              <option value="all">All Categories</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" id="exportCsvBtn" title="Export current data to CSV spreadsheet">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 38%;">Description & Nature</th>
+                <th style="width: 20%;">Category</th>
+                <th style="width: 17%; text-align: right;">Amount / Life-Energy</th>
+                <th style="width: 10%; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTableBody">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+
+          <div class="empty-state" id="emptyTransactionsState" style="display: none;">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p style="font-weight: 500;">No transactions match the selected filter</p>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Try clearing your search or add a new transaction</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Standout Feature 2: Slide-Over "What-If" Sandbox Drawer -->
+    <div class="drawer-overlay" id="sandboxDrawerOverlay"></div>
+    <aside class="drawer" id="sandboxDrawer">
+      <div class="drawer-header">
+        <div>
+          <h2 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.45rem;">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:1.15rem;height:1.15rem;color:var(--accent-life);">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            What-If Scenario Sandbox
+          </h2>
+          <p style="font-size: 0.78rem; margin-top: 0.15rem;">Simulate spending cuts and visualize compounding life-energy returns</p>
+        </div>
+        <button class="btn btn-icon btn-ghost" id="closeSandboxBtn">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-body">
+        <!-- Live Simulation Impact Banner -->
+        <div class="scenario-summary-banner">
+          <div style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--accent-income); letter-spacing: 0.04em;">
+            Projected Simulation Impact
+          </div>
+          <div class="scenario-kpi-row">
+            <div class="scenario-kpi">
+              <div class="scenario-kpi-title">Monthly Cashflow Saved</div>
+              <div class="scenario-kpi-val" id="simMonthlySaved">$0.00</div>
+            </div>
+            <div class="scenario-kpi">
+              <div class="scenario-kpi-title" style="color:var(--accent-life);">Life-Hours Reclaimed</div>
+              <div class="scenario-kpi-val" id="simLifeReclaimed" style="color:var(--accent-life);">0h 0m</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slider Controls Header -->
+        <div style="margin-bottom: 0.75rem; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);">
+          Fine-tune Category Cutbacks
+        </div>
+
+        <!-- Dynamic Category Sliders -->
+        <div id="whatIfSlidersContainer">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Compounding Investment Math Card -->
+        <div class="compounding-card">
+          <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:0.95rem;height:0.95rem;color:var(--accent-income);">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Compounding Horizon (1-Year Growth)
+          </div>
+          If you invest your monthly savings (<span id="simAnnualSaved" style="font-weight:600;color:var(--text-primary);">$0.00</span>/year) at an average 7% index return, your projected wealth addition in 12 months is <strong id="simCompoundGrowth" style="color:var(--accent-income);">$0.00</strong>.
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button class="btn btn-ghost btn-sm" id="resetSandboxBtn">Reset Baseline</button>
+        <button class="btn btn-primary btn-sm" id="applySandboxBtn">Apply as Budget Target</button>
+      </div>
+    </aside>
+
+    <!-- Modal: Add / Edit Transaction -->
+    <div class="modal-overlay" id="expenseModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalExpenseTitle">Log New Transaction</h2>
+          <button class="btn btn-icon btn-ghost close-modal-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form id="expenseForm">
+          <div class="modal-body">
+            <!-- Type Selector: Expense vs Income -->
+            <div class="form-group">
+              <label class="form-label">Transaction Type</label>
+              <div class="segmented-control">
+                <label class="segmented-option" style="cursor: pointer;">
+                  <input type="radio" name="txType" id="typeExpense" value="expense" checked style="display:none;" />
+                  Expense / Outflow
+                </label>
+                <label class="segmented-option" style="cursor: pointer;">
+                  <input type="radio" name="txType" id="typeIncome" value="income" style="display:none;" />
+                  Income / Inflow
+                </label>
+              </div>
+            </div>
+
+            <!-- Title & Amount Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="txTitle">Title / Merchant</label>
+                <input type="text" id="txTitle" class="form-input" placeholder="e.g. Trader Joe's, Uber" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="txAmount">Amount (<span id="txCurrencyBadge">₹</span>)</label>
+                <input type="number" id="txAmount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required />
+              </div>
+            </div>
+
+            <!-- Nature Selector (Need vs Want) -->
+            <div class="form-group" id="natureFormGroup">
+              <label class="form-label">Nature of Expense</label>
+              <div class="segmented-control">
+                <label class="segmented-option" style="cursor: pointer;">
+                  <input type="radio" name="txNature" id="natureNeed" value="need" checked style="display:none;" />
+                  Essential (Need)
+                </label>
+                <label class="segmented-option" style="cursor: pointer;">
+                  <input type="radio" name="txNature" id="natureWant" value="want" style="display:none;" />
+                  Discretionary (Want)
+                </label>
+              </div>
+            </div>
+
+            <!-- Category & Date Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="txCategory">Category</label>
+                <select id="txCategory" class="form-select"></select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="txDate">Date</label>
+                <input type="date" id="txDate" class="form-input" required />
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+              <label class="form-label" for="txNotes">Notes (Optional)</label>
+              <input type="text" id="txNotes" class="form-input" placeholder="Optional context or memo" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Transaction</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Settings & Life-Energy Configuration -->
+    <div class="modal-overlay" id="settingsModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2 class="modal-title">Financial Profile & Life-Energy Configuration</h2>
+          <button class="btn btn-icon btn-ghost close-modal-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form id="settingsForm">
+          <div class="modal-body">
+            <div style="background-color:var(--accent-life-bg);border:1px solid var(--accent-life-border);padding:0.85rem;border-radius:var(--radius-sm);margin-bottom:1.25rem;font-size:0.8rem;color:var(--text-primary);line-height:1.45;">
+              <strong style="color:var(--accent-life);">The Life-Energy Principle:</strong> By setting your effective hourly wage, the dashboard calculates every expense in hours and minutes of your actual life spent working.
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="settingWage">Hourly Wage Rate</label>
+                <input type="number" id="settingWage" class="form-input" step="0.50" min="1" required />
+                <span style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">Gross or net hourly earning rate</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="settingBudget">Monthly Target Budget</label>
+                <input type="number" id="settingBudget" class="form-input" step="50" min="100" required />
+                <span style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">Baseline monthly cap</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="settingCurrencySelect">Base Currency & Number Formatting</label>
+              <select id="settingCurrencySelect" class="form-select"></select>
+              <span style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">Supports Indian Rupee (₹ INR) with Lakhs/Crores formatting, and major global currencies</span>
+            </div>
+
+            <div style="border-top:1px solid var(--border-subtle);padding-top:1rem;margin-top:1rem;">
+              <label class="form-label" style="margin-bottom:0.5rem;display:block;">Data Backup & Reset</label>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" id="exportJsonBtn">Export JSON Backup</button>
+                <button type="button" class="btn btn-danger btn-sm" id="resetDemoDataBtn">Reset Demo Data</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Apply Settings</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Modules (Loaded sequentially for universal file:// and http:// compatibility) -->
+  <script src="js/storage.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
